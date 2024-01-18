@@ -20,7 +20,7 @@ export default function Home() {
               <h1 className="text-[24px] font-bold text-grayish">Tel Aviv</h1>
             </div>
             <div className="flex flex-col items-end">
-              <p>City's Monthly Broke Rise</p>
+              <p>City&apos;s Monthly Broke Rise</p>
               <p>
                 {" "}
                 | <span className="text-greenify text-[14px] ">27</span> Brokers
@@ -34,7 +34,7 @@ export default function Home() {
               <h1 className="text-[24px] font-bold text-grayish">Tel Aviv</h1>
             </div>
             <div className="flex flex-col items-end">
-              <p>City's Monthly Brokers</p>
+              <p>City&apos;s Monthly Brokers</p>
             </div>
           </div>
           <div className="flex flex-col items-between w-[231px] h-[121px] shadow-smx bg-white gap-2">
