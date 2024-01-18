@@ -6,7 +6,6 @@ const data = [
   { id: 3, name: "Item 3", value: 30 },
   { id: 4, name: "Item 4", value: 40 },
   { id: 5, name: "Item 5", value: 50 },
-  { id: 5, name: "Item 5", value: 50 },
 ];
 
 const Table = () => {
