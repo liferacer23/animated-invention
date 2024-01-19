@@ -7,6 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
+    console.log(req.body);
     try {
       await connectMongoDb();
       await Broker.insertMany(req.body);
@@ -27,3 +28,11 @@ export default async function handler(
     res.status(405).json({ error: "Method Not Allowed" });
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "10mb",
+    },
+  },
+};

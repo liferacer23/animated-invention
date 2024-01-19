@@ -5,7 +5,7 @@ const BrokerSchema = new Schema(
     id: String,
     name: String,
     identification: Number,
-    license: Number,
+    license: Number || String,
     homeTown: String,
     status: String,
     createdAt: Date,
