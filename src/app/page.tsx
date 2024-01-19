@@ -43,7 +43,42 @@ export default function Home() {
     }
   };
 
-  const getBrokers = async (noRequest: boolean) => {
+  const getBrokers = async () => {
+    try {
+      const firstResponse = await axios.get(
+        "https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=1"
+      );
+      const total = firstResponse?.data?.result?.total;
+
+      const secondResponse = await axios.get(
+        `https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=${total}`
+      );
+      const newRecords = secondResponse.data.result.records.map(
+        (broker: any) => ({
+          id: broker._id,
+          name: broker.name,
+          license: broker["מס רשיון"],
+          homeTown: broker["עיר מגורים"],
+          status: broker.status,
+          createdAt: moment().format("YYYY-MM-DD"),
+          updatedAt: moment().format("YYYY-MM-DD"),
+          identification: broker["מס רשיון"],
+        })
+      );
+      createBrokersRequest(newRecords);
+      setBrokersData((prevData: any) => {
+        if (Array.isArray(prevData)) {
+          return [...prevData, ...newRecords];
+        } else {
+          return newRecords;
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getMonthlyBrokers = async () => {
     try {
       const firstResponse = await axios.get(
         "https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=1"
@@ -66,14 +101,6 @@ export default function Home() {
         })
       );
       setCurrentMonthBrokers(newRecords);
-      !noRequest && createBrokersRequest(newRecords);
-      setBrokersData((prevData: any) => {
-        if (Array.isArray(prevData)) {
-          return [...prevData, ...newRecords];
-        } else {
-          return newRecords;
-        }
-      });
     } catch (error) {
       console.log(error);
     }
@@ -90,13 +117,14 @@ export default function Home() {
       return true;
     });
   }
-  const getBrokersRequest = async () => {
+
+  const getBrokersFromDb = async () => {
     try {
       const response = await fetch("/api/route", {
         method: "GET",
       });
       const data = await response.json();
-
+      console.log(data, "asidjoiasjdoiajsoidj");
       if (
         data?.brokers?.length > 0 &&
         data?.brokers[0]?.createdAt &&
@@ -105,8 +133,10 @@ export default function Home() {
           .format("YYYY-MM-DD") !==
           moment().startOf("month").format("YYYY-MM-DD")
       ) {
-        await getBrokers(false);
+        console.log(data, "wuuuuuuuuuuuuuuuuuuuuuu");
+        await getBrokers();
       } else {
+        console.log(data, "yeahhhhhhhhhhhhhh");
         return setBrokersData(filterDuplicateObjects(data?.brokers, "license"));
       }
     } catch (error) {
@@ -115,12 +145,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getBrokers(true);
+    getMonthlyBrokers();
   }, []);
 
   useEffect(() => {
     setLoading(true);
-    getBrokersRequest().then(() => setLoading(false));
+    getBrokersFromDb().then(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -153,8 +183,6 @@ export default function Home() {
       setChartData(uniqueBrokersPerMonth);
     }
   }, [brokersData]);
-
-  console.log(currentMonthBrokers, brokersData);
 
   return (
     <>
@@ -229,7 +257,7 @@ export default function Home() {
                     |{" "}
                     <span className="text-greenify text-[14px] font-bold">
                       {brokersData?.length === currentMonthBrokers?.length
-                        ? "No Change"
+                        ? "0%"
                         : `${(
                             ((currentMonthBrokers?.length -
                               brokersData?.length) /
