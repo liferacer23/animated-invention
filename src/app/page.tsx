@@ -67,13 +67,14 @@ export default function Home() {
       );
       setCurrentMonthBrokers(newRecords);
       !noRequest && createBrokersRequest(newRecords);
-      setBrokersData((prevData: any) => {
-        if (Array.isArray(prevData)) {
-          return [...prevData, ...newRecords];
-        } else {
-          return newRecords;
-        }
-      });
+      !noRequest &&
+        setBrokersData((prevData: any) => {
+          if (Array.isArray(prevData)) {
+            return [...prevData, ...newRecords];
+          } else {
+            return newRecords;
+          }
+        });
     } catch (error) {
       console.log(error);
     }
