@@ -1,9 +1,25 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import TagIcon from "../../public/assets/tagIcon.png";
 import Image from "next/image";
 import LineChart from "./components/lineChart";
 import TableComponent from "./components/tableComponent";
+import axios from "axios";
 export default function Home() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    console.log("fetching data");
+    axios
+      .get("/api/hello")
+      .then((response) => {
+        console.log("Response:", response);
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
   return (
     <main className="flex flex-col w-10/12 h-15 mx-auto items-center justify-between  bg-white mt-3 px-44">
       <div className="w-full flex flex-col items-end gap-2 my-2">
