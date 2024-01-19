@@ -157,13 +157,10 @@ export default function Home() {
     }
   }, [brokersData]);
 
-  console.log(tableData, "tableData");
-  console.log(chartData, "chartData");
-
   return (
     <>
       {loading ? (
-        <div className="w-9/12 flex justify-end bg-red-200">
+        <div className="flex justify-end w-full mx-auto h-full">
           <Skeleton />
           <Skeleton />
           <Skeleton />
