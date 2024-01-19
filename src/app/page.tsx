@@ -30,7 +30,7 @@ export default function Home() {
 
   const createBrokersRequest = async (brokers: any) => {
     try {
-      const response = await fetch("/api/route", {
+      const response = await fetch(`https://${process.env.VERCEL_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +120,7 @@ export default function Home() {
 
   const getBrokersFromDb = async () => {
     try {
-      const response = await fetch("/api/route", {
+      const response = await fetch(`https://${process.env.VERCEL_URL}`, {
         method: "GET",
       });
       const data = await response.json();
@@ -133,10 +133,8 @@ export default function Home() {
           .format("YYYY-MM-DD") !==
           moment().startOf("month").format("YYYY-MM-DD")
       ) {
-        console.log(data, "wuuuuuuuuuuuuuuuuuuuuuu");
         await getBrokers();
       } else {
-        console.log(data, "yeahhhhhhhhhhhhhh");
         return setBrokersData(filterDuplicateObjects(data?.brokers, "license"));
       }
     } catch (error) {
