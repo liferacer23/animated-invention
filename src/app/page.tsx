@@ -154,6 +154,8 @@ export default function Home() {
     }
   }, [brokersData]);
 
+  console.log(currentMonthBrokers?.length, brokersData?.length);
+
   return (
     <>
       {loading ? (
@@ -185,10 +187,11 @@ export default function Home() {
                     {" "}
                     |{" "}
                     <span className="text-greenify text-[14px] font-bold ">
-                      {Math.max(
-                        currentMonthBrokers?.length - brokersData?.length,
-                        0
-                      )}
+                      {currentMonthBrokers?.length - brokersData?.length > 0
+                        ? currentMonthBrokers?.length - brokersData?.length
+                        : currentMonthBrokers?.length - brokersData?.length < 0
+                        ? currentMonthBrokers?.length - brokersData?.length * 1
+                        : 0}
                     </span>{" "}
                     Brokers Added
                   </p>
