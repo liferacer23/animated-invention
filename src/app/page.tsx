@@ -8,6 +8,7 @@ import axios from "axios";
 import moment from "moment";
 export default function Home() {
   interface Broker {
+    _id: any;
     id: String;
     name: String;
     identification: Number;
@@ -16,6 +17,9 @@ export default function Home() {
     status: String;
     createdAt: String;
     updatedAt: String;
+    "מס רשיון": Number;
+    "שם המתווך": Number;
+    "עיר מגורים": String;
   }
   const [data, setData] = useState<any>({
     id: "",
@@ -66,12 +70,12 @@ export default function Home() {
               (broker: Broker) => ({
                 id: broker?._id,
                 name: broker?.name,
-                identification: broker["מס רשיון"],
                 license: broker["שם המתווך"],
                 homeTown: broker["עיר מגורים"],
                 status: broker?.status,
                 createdAt: moment().format("YYYY-MM-DD"),
                 updatedAt: moment().format("YYYY-MM-DD"),
+                identification: broker["מס רשיון"],
               })
             );
 
