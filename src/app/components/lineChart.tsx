@@ -17,7 +17,6 @@ interface ChartData {
 }
 
 export default function App({ chartData }: { chartData: ChartData[] }) {
-  console.log(chartData);
   return (
     <LineChart
       width={600}

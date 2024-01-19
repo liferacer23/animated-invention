@@ -38,7 +38,6 @@ export default function Home() {
         body: JSON.stringify(brokers),
       });
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -123,8 +122,6 @@ export default function Home() {
     setLoading(true);
     getBrokersRequest().then(() => setLoading(false));
   }, []);
-
-  console.log(brokersData, "brokersData");
 
   useEffect(() => {
     if (brokersData?.length > 0) {
