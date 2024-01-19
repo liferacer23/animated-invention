@@ -2,7 +2,7 @@ import React from "react";
 
 const LoadingSkeleton = () => {
   return (
-    <main className="flex flex-col w-10/12 h-15 mx-auto items-center justify-between bg-white mt-3 px-44">
+    <main className="flex flex-col w-4/12 h-15 mx-auto items-center justify-between bg-white mt-3 px-44">
       <div className="w-full flex flex-col items-end gap-2 my-2">
         <div className="animate-pulse">
           <div className="bg-gray-300 h-6 w-36 rounded"></div>

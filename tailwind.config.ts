@@ -8,12 +8,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        jakarta: ["Plus Jakarta Sans", "sans-serif"],
+      },
       boxShadow: {
         smx: "0px 2px 4px 0px rgba(55, 73, 87, 0.05)",
       },
       colors: {
         greenify: "rgba(61, 194, 147, 1)",
         grayish: "#383D4E",
+        lightGray: "rgba(242,242,242,1)",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

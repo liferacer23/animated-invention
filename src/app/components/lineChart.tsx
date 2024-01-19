@@ -55,12 +55,18 @@ const data = [
   },
 ];
 
-export default function App() {
+interface ChartData {
+  createdAt: string;
+  activeBrokers: number;
+}
+
+export default function App({ chartData }: { chartData: ChartData[] }) {
+  console.log(chartData);
   return (
     <LineChart
       width={500}
       height={300}
-      data={data}
+      data={chartData}
       margin={{
         top: 5,
         right: 30,
@@ -69,17 +75,16 @@ export default function App() {
       }}
     >
       <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
+      <XAxis dataKey="createdAt" />
       <YAxis />
       <Tooltip />
       <Legend />
       <Line
         type="monotone"
-        dataKey="pv"
+        dataKey="activeBrokers"
         stroke="#8884d8"
         activeDot={{ r: 8 }}
       />
-      <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
     </LineChart>
   );
 }

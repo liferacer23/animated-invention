@@ -50,7 +50,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="flex w-10/12 h-15 mx-auto items-center justify-between  bg-white mt-3">
+      <div className="flex w-10/12 h-15 mx-auto items-center justify-between  bg-white my-5">
         <div>
           <p className="text-[12px] text-black">MadaDirot 2023</p>
         </div>

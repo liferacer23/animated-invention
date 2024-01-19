@@ -24,6 +24,10 @@ export default function Home() {
   }
   const [brokersData, setBrokersData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [tableData, setTableData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any>(null);
+  const [currentMonthBrokers, setCurrentMonthBrokers] = useState<any>(null);
+
   const createBrokersRequest = async (brokers: any) => {
     try {
       const response = await fetch("/api/route", {
@@ -40,7 +44,7 @@ export default function Home() {
     }
   };
 
-  const getBrokers = async () => {
+  const getBrokers = async (noRequest: boolean) => {
     try {
       const firstResponse = await axios.get(
         "https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=1"
@@ -62,7 +66,8 @@ export default function Home() {
           identification: broker["מס רשיון"],
         })
       );
-      createBrokersRequest(newRecords);
+      setCurrentMonthBrokers(newRecords);
+      !noRequest && createBrokersRequest(newRecords);
       setBrokersData((prevData: any) => {
         if (Array.isArray(prevData)) {
           return [...prevData, ...newRecords];
@@ -92,7 +97,7 @@ export default function Home() {
         method: "GET",
       });
       const data = await response.json();
-      console.log(data, "Brokeeeee");
+
       if (
         data?.brokers?.length > 0 &&
         data?.brokers[0]?.createdAt &&
@@ -101,7 +106,7 @@ export default function Home() {
           .format("YYYY-MM-DD") !==
           moment().startOf("month").format("YYYY-MM-DD")
       ) {
-        await getBrokers();
+        await getBrokers(false);
       } else {
         return setBrokersData(filterDuplicateObjects(data?.brokers, "license"));
       }
@@ -111,18 +116,60 @@ export default function Home() {
   };
 
   useEffect(() => {
+    getBrokers(true);
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     getBrokersRequest().then(() => setLoading(false));
   }, []);
 
   console.log(brokersData, "brokersData");
 
+  useEffect(() => {
+    if (brokersData?.length > 0) {
+      const cities = brokersData?.map((broker: Broker) => broker.homeTown);
+
+      const uniqueCities = [...new Set(cities)];
+      const brokersPerCity = uniqueCities.map((city) => {
+        const brokers = brokersData.filter(
+          (broker: Broker) => broker.homeTown === city
+        );
+        return {
+          city,
+          brokers: brokers.length,
+        };
+      });
+      setTableData(brokersPerCity);
+      const brokersPerMonth = brokersData.map((broker: Broker) => {
+        return {
+          createdAt: broker.createdAt,
+          activeBrokers: brokersData.filter(
+            (b: Broker) => b.createdAt === broker.createdAt
+          ).length,
+        };
+      });
+      const uniqueBrokersPerMonth = filterDuplicateObjects(
+        brokersPerMonth,
+        "createdAt"
+      );
+      setChartData(uniqueBrokersPerMonth);
+    }
+  }, [brokersData]);
+
+  console.log(tableData, "tableData");
+  console.log(chartData, "chartData");
+
   return (
     <>
       {loading ? (
-        <Skeleton />
+        <div className="w-9/12 flex justify-end bg-red-200">
+          <Skeleton />
+          <Skeleton />
+          <Skeleton />
+        </div>
       ) : (
-        <main className="flex flex-col w-10/12 h-15 mx-auto items-center justify-between  bg-white mt-3 px-44">
+        <main className="flex flex-col w-full mx-auto items-center justify-between bg-white mt-3 px-4 md:w-10/12 md:px-44">
           <div className="w-full flex flex-col items-end gap-2 my-2">
             <h1 className="text-[22px] font-semibold text-grayish">Overview</h1>
             <p className="text-[16px] cursor-pointer text-greenify">
@@ -130,7 +177,7 @@ export default function Home() {
             </p>
           </div>
           <>
-            <div className="w-full flex justify-end gap-10 my-5 ">
+            <div className="w-full flex flex-col items-center gap-5 my-5 md:flex-row md:justify-between">
               <div className="flex flex-col items-between w-[231px] h-[121px] shadow-smx bg-white gap-2">
                 <div className="flex justify-between items-start">
                   <Image src={TagIcon} alt="tag icon" />
@@ -142,8 +189,12 @@ export default function Home() {
                   <p>City&apos;s Monthly Broke Rise</p>
                   <p>
                     {" "}
-                    | <span className="text-greenify text-[14px] ">
-                      27
+                    |{" "}
+                    <span className="text-greenify text-[14px] font-bold ">
+                      {Math.max(
+                        currentMonthBrokers?.length - brokersData?.length,
+                        0
+                      )}
                     </span>{" "}
                     Brokers Added
                   </p>
@@ -164,14 +215,22 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <Image src={TagIcon} alt="tag icon" />
                   <h1 className="text-[24px] font-bold text-grayish">
-                    Tel Aviv
+                    {brokersData?.length === currentMonthBrokers?.length
+                      ? brokersData?.length
+                      : Math.max(
+                          currentMonthBrokers?.length -
+                            brokersData?.length +
+                            brokersData?.length,
+                          0
+                        )}
                   </h1>
                 </div>
                 <div className="flex flex-col items-end justify-star">
                   <p>Total Brokers in Israel</p>
                   <p>
                     {" "}
-                    | <span className="text-greenify text-[14px] ">
+                    |{" "}
+                    <span className="text-greenify text-[14px] font-bold">
                       2%
                     </span>{" "}
                     change from last month
@@ -181,10 +240,10 @@ export default function Home() {
             </div>
           </>
           <div className="w-full flex justify-end gap-10 my-5 ">
-            {/* <LineChart /> */}
+            <LineChart chartData={chartData} />
           </div>
           <div className="w-full flex justify-end gap-10 my-5 ">
-            <TableComponent />
+            <TableComponent tableData={tableData} />
           </div>
         </main>
       )}
