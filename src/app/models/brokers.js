@@ -5,8 +5,10 @@ const BrokerSchema = new Schema(
     name: String,
     identification: Number,
     license: Number,
-    name: String,
     homeTown: String,
+    status: String,
+    createdAt: Date,
+    updatedAt: Date,
   },
   {
     timestamps: true,

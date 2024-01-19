@@ -7,18 +7,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { name, identification, license, homeTown } = req.body;
     try {
       await connectMongoDb();
-      await Broker.create({
-        name,
-        identification,
-        license,
-        homeTown,
-      });
+      await Broker.insertMany(req.body);
       res.status(201).json({ message: "Broker created successfully." });
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      console.log(error);
+      res.status(500).json({ error: error });
     }
   } else if (req.method === "GET") {
     try {

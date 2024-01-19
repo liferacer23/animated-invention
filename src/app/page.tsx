@@ -5,21 +5,118 @@ import Image from "next/image";
 import LineChart from "./components/lineChart";
 import TableComponent from "./components/tableComponent";
 import axios from "axios";
+import moment from "moment";
 export default function Home() {
-  const [data, setData] = useState(null);
+  interface Broker {
+    name: String;
+    identification: Number;
+    license: Number;
+    homeTown: String;
+    status: String;
+    createdAt: String;
+    updatedAt: String;
+  }
+  const [data, setData] = useState<any>({
+    name: "",
+    identification: 0,
+    license: 0,
+    homeTown: "",
+    status: "",
+    createdAt: "",
+    updatedAt: "",
+  });
+  const createBrokersRequest = async (
+    brokers: Array<{
+      name: string;
+      identification: Number;
+      license: Number;
+      homeTown: string;
+    }>
+  ) => {
+    try {
+      const response = await fetch("/api/route", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(brokers),
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
-  useEffect(() => {
-    console.log("fetching data");
+  const getBrokers = async () => {
     axios
-      .get("/api/hello")
+      .get(
+        "https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=1"
+      )
       .then((response) => {
-        console.log("Response:", response);
-        setData(response.data);
+        axios
+          .get(
+            `https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=${response?.data?.result?.total}`
+          )
+          .then((response) => {
+            const newRecords = response?.data?.result?.records?.map(
+              (broker: Broker) => ({
+                name: broker?.name,
+                identification: broker?.identification,
+                license: broker?.license,
+                homeTown: broker?.homeTown,
+                status: broker?.status,
+                createdAt: broker?.createdAt,
+                updatedAt: broker?.updatedAt,
+              })
+            );
+
+            setData((prevData: any) => {
+              if (Array.isArray(prevData)) {
+                return [...prevData, ...newRecords];
+              } else {
+                return newRecords;
+              }
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        console.log(error);
       });
+  };
+
+  const getBrokersRequest = async () => {
+    try {
+      const response = await fetch("/api/route", {
+        method: "GET",
+      });
+      const data = await response.json();
+      console.log(data, "data");
+      if (
+        data?.brokers?.length > 0 &&
+        data?.brokers[0]?.createdAt &&
+        moment(data?.brokers[data?.brokers?.length - 1]?.createdAt)
+          .startOf("month")
+          .format("YYYY-MM-DD") ===
+          moment().startOf("month").format("YYYY-MM-DD")
+      ) {
+        getBrokers();
+      } else {
+        setData(data?.brokers);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    getBrokersRequest();
   }, []);
+
+  console.log(data);
   return (
     <main className="flex flex-col w-10/12 h-15 mx-auto items-center justify-between  bg-white mt-3 px-44">
       <div className="w-full flex flex-col items-end gap-2 my-2">
