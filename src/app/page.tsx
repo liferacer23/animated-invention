@@ -29,10 +29,9 @@ export default function Home() {
   const [currentMonthBrokers, setCurrentMonthBrokers] = useState<any>(null);
 
   const createBrokersRequest = async (brokers: any) => {
-    if (!process.env.NEXT_PUBLIC_VERCEL_URL) return;
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/route`,
+        `https://animated-invention-bqcn.vercel.app/api/route`,
         {
           method: "POST",
           headers: {
@@ -123,10 +122,9 @@ export default function Home() {
   }
 
   const getBrokersFromDb = async () => {
-    if (!process.env.NEXT_PUBLIC_VERCEL_URL) return;
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/route`,
+        `https://animated-invention-bqcn.vercel.app/api/route`,
         {
           method: "GET",
         }
@@ -156,7 +154,6 @@ export default function Home() {
 
   useEffect(() => {
     setLoading(true);
-
     getBrokersFromDb().then(() => setLoading(false));
   }, []);
 
