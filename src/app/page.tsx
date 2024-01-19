@@ -31,7 +31,7 @@ export default function Home() {
   const createBrokersRequest = async (brokers: any) => {
     try {
       const response = await fetch(
-        `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`,
+        `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/route`,
         {
           method: "POST",
           headers: {
@@ -124,13 +124,13 @@ export default function Home() {
   const getBrokersFromDb = async () => {
     try {
       const response = await fetch(
-        `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`,
+        `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/route`,
         {
           method: "GET",
         }
       );
       const data = await response.json();
-      console.log(data, "asidjoiasjdoiajsoidj");
+
       if (
         data?.brokers?.length > 0 &&
         data?.brokers[0]?.createdAt &&
