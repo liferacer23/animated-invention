@@ -30,13 +30,16 @@ export default function Home() {
 
   const createBrokersRequest = async (brokers: any) => {
     try {
-      const response = await fetch(`https://${process.env.VERCEL_URL}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(brokers),
-      });
+      const response = await fetch(
+        `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(brokers),
+        }
+      );
       const data = await response.json();
     } catch (error) {
       console.error("Error:", error);
@@ -120,9 +123,12 @@ export default function Home() {
 
   const getBrokersFromDb = async () => {
     try {
-      const response = await fetch(`https://${process.env.VERCEL_URL}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`,
+        {
+          method: "GET",
+        }
+      );
       const data = await response.json();
       console.log(data, "asidjoiasjdoiajsoidj");
       if (
