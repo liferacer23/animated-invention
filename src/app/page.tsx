@@ -8,6 +8,7 @@ import axios from "axios";
 import moment from "moment";
 export default function Home() {
   interface Broker {
+    id: String;
     name: String;
     identification: Number;
     license: Number;
@@ -17,6 +18,7 @@ export default function Home() {
     updatedAt: String;
   }
   const [data, setData] = useState<any>({
+    id: "",
     name: "",
     identification: 0,
     license: 0,
@@ -59,15 +61,17 @@ export default function Home() {
             `https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=${response?.data?.result?.total}`
           )
           .then((response) => {
+            console.log(response?.data?.result?.records, "response");
             const newRecords = response?.data?.result?.records?.map(
               (broker: Broker) => ({
+                id: broker?._id,
                 name: broker?.name,
-                identification: broker?.identification,
-                license: broker?.license,
-                homeTown: broker?.homeTown,
+                identification: broker["מס רשיון"],
+                license: broker["שם המתווך"],
+                homeTown: broker["עיר מגורים"],
                 status: broker?.status,
-                createdAt: broker?.createdAt,
-                updatedAt: broker?.updatedAt,
+                createdAt: moment().format("YYYY-MM-DD"),
+                updatedAt: moment().format("YYYY-MM-DD"),
               })
             );
 
@@ -78,6 +82,9 @@ export default function Home() {
                 return newRecords;
               }
             });
+          })
+          .finally(() => {
+            createBrokersRequest(data);
           })
           .catch((error) => {
             console.log(error);
@@ -94,13 +101,12 @@ export default function Home() {
         method: "GET",
       });
       const data = await response.json();
-      console.log(data, "data");
       if (
         data?.brokers?.length > 0 &&
         data?.brokers[0]?.createdAt &&
         moment(data?.brokers[data?.brokers?.length - 1]?.createdAt)
           .startOf("month")
-          .format("YYYY-MM-DD") ===
+          .format("YYYY-MM-DD") !==
           moment().startOf("month").format("YYYY-MM-DD")
       ) {
         getBrokers();

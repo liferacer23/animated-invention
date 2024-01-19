@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const BrokerSchema = new Schema(
   {
+    id: String,
     name: String,
     identification: Number,
     license: Number,
