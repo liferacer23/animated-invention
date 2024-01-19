@@ -210,13 +210,13 @@ export default function Home() {
                   <Image src={TagIcon} alt="tag icon" />
                   <h1 className="text-[24px] font-bold text-grayish">
                     {brokersData?.length === currentMonthBrokers?.length
-                      ? brokersData?.length
+                      ? brokersData?.length.toLocaleString()
                       : Math.max(
                           currentMonthBrokers?.length -
                             brokersData?.length +
                             brokersData?.length,
                           0
-                        )}
+                        ).toLocaleString()}
                   </h1>
                 </div>
                 <div className="flex flex-col items-end justify-star">
