@@ -75,51 +75,47 @@ export default function Home() {
     }
   };
 
+  function filterDuplicateObjects(arr: Broker[], prop: any) {
+    const seen = new Set();
+    return arr.filter((item: Broker) => {
+      const value = item[prop as keyof Broker];
+      if (seen.has(value)) {
+        return false;
+      }
+      seen.add(value);
+      return true;
+    });
+  }
+  const getBrokersRequest = async () => {
+    try {
+      const response = await fetch("/api/route", {
+        method: "GET",
+      });
+      const data = await response.json();
+      console.log(data, "Brokeeeee");
+      if (
+        data?.brokers?.length > 0 &&
+        data?.brokers[0]?.createdAt &&
+        moment(data?.brokers[data?.brokers?.length - 1]?.createdAt)
+          .startOf("month")
+          .format("YYYY-MM-DD") !==
+          moment().startOf("month").format("YYYY-MM-DD")
+      ) {
+        await getBrokers();
+      } else {
+        return setBrokersData(filterDuplicateObjects(data?.brokers, "license"));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
-    getBrokers();
+    setLoading(true);
+    getBrokersRequest().then(() => setLoading(false));
   }, []);
 
-  // function filterDuplicateObjects(arr, prop) {
-  //   const seen = new Set();
-  //   return arr.filter((item) => {
-  //     const value = item[prop];
-  //     if (seen.has(value)) {
-  //       return false;
-  //     }
-  //     seen.add(value);
-  //     return true;
-  //   });
-  // }
-  // const getBrokersRequest = async () => {
-  //   try {
-  //     const response = await fetch("/api/route", {
-  //       method: "GET",
-  //     });
-  //     const data = await response.json();
-  //     console.log(data, "Brokeeeee");
-  //     if (
-  //       data?.brokers?.length > 0 &&
-  //       data?.brokers[0]?.createdAt &&
-  //       moment(data?.brokers[data?.brokers?.length - 1]?.createdAt)
-  //         .startOf("month")
-  //         .format("YYYY-MM-DD") !==
-  //         moment().startOf("month").format("YYYY-MM-DD")
-  //     ) {
-  //       await getBrokers();
-  //     } else {
-  //       return setBrokersData(filterDuplicateObjects(data?.brokers, "license"));
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   getBrokersRequest().then(() => setLoading(false));
-  // }, []);
-
-  // console.log(brokersData, "brokersData");
+  console.log(brokersData, "brokersData");
 
   return (
     <>
