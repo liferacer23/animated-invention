@@ -154,7 +154,7 @@ export default function Home() {
     }
   }, [brokersData]);
 
-  console.log(currentMonthBrokers?.length, brokersData?.length);
+  console.log(currentMonthBrokers, brokersData);
 
   return (
     <>
@@ -228,7 +228,16 @@ export default function Home() {
                     {" "}
                     |{" "}
                     <span className="text-greenify text-[14px] font-bold">
-                      2%
+                      {brokersData?.length === currentMonthBrokers?.length
+                        ? "No Change"
+                        : `${(
+                            ((currentMonthBrokers?.length -
+                              brokersData?.length) /
+                              brokersData?.length) *
+                            100
+                          ).toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}%`}
                     </span>{" "}
                     change from last month
                   </p>
