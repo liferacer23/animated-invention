@@ -33,7 +33,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
               <th className="px-6 py-3 text-right font-jakarta text-gray-500  bg-lightGray w-full text-[18px] border-r-2 border-grayish rounded-tr-2">
                 Total Brokers
               </th>
-              <th className="px-6 py-3 text-right font-jakarta text-gray-500  bg-white text-[18px]  border-grayish">
+              <th className="px-6 py-3 text-right font-jakarta text-gray-500  bg-white text-[18px] border-l-2 border-grayish">
                 Area
               </th>
             </tr>
