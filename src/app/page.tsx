@@ -220,7 +220,7 @@ export default function Home() {
   return (
     <>
       {loading ? (
-        <div className="flex justify-end w-full mx-auto h-full">
+        <div className="flex justify-end w-full mx-auto min-h-screen">
           <Skeleton />
           <Skeleton />
           <Skeleton />
@@ -316,7 +316,7 @@ export default function Home() {
                 brokersData?.groupBrokersByCreatedAt
                   ?.map((item: any) => ({
                     createdAt: item._id,
-                    activeBrokers: item.count,
+                    activeBrokers: item?.count,
                   }))
                   .sort(
                     (a: any, b: any) => b.activeBrokers - a.activeBrokers

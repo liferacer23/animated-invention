@@ -1,4 +1,3 @@
-"use client";
 import moment from "moment";
 import React from "react";
 import {
@@ -13,33 +12,40 @@ import {
 
 interface ChartData {
   createdAt: string;
-  activeBrokers: number;
+  activeBrokers: number | string;
 }
 
 export default function App({ chartData }: { chartData: ChartData[] }) {
   return (
     <LineChart
       width={600}
-      height={300}
+      height={500}
       data={chartData}
       margin={{
         top: 5,
-
         left: 30,
-        bottom: 5,
+        bottom: 40,
       }}
     >
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis
+        tickLine={false}
+        strokeWidth={3}
         tickFormatter={(tick) => {
           return moment(tick).format("MMM");
         }}
         dataKey="createdAt"
-        label={{ value: "Month", position: "insideBottomRight", offset: 0 }}
+        label={{
+          value: "month",
+          position: "insideBottom",
+          offset: -10,
+        }}
       />
       <YAxis
+        tickLine={false}
+        strokeWidth={3}
         label={{
-          value: "Total Brokers",
+          value: "total Brokers",
           angle: -90,
           position: "insideLeft",
           offset: -20,
@@ -50,11 +56,16 @@ export default function App({ chartData }: { chartData: ChartData[] }) {
           return moment(label).format("MMM");
         }}
       />
-      <Legend />
+
       <Line
-        type="monotone"
+        type="basis"
         dataKey="activeBrokers"
-        stroke="#8884d8"
+        stroke="#000"
+        dot={{
+          stroke: "#000",
+          strokeWidth: 8,
+          fill: "#000",
+        }}
         activeDot={{ r: 8 }}
       />
     </LineChart>

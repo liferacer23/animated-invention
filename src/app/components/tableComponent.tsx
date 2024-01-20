@@ -71,7 +71,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
               }) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 whitespace-nowrap bg-lightGray">
-                    {item.brokers}
+                    {item.brokers?.toLocaleString() ?? 0}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap border-l-2 border-grayish rounded">
                     {item.city}
