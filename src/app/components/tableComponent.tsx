@@ -2,26 +2,9 @@ import React from "react";
 
 interface TableData {
   id: React.Key | null | undefined;
-  city:
-    | string
-    | number
-    | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | Iterable<React.ReactNode>
-    | React.ReactPortal
-    | React.PromiseLikeOfReactNode
-    | null
-    | undefined;
-  brokers:
-    | string
-    | number
-    | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | Iterable<React.ReactNode>
-    | React.ReactPortal
-    | React.PromiseLikeOfReactNode
-    | null
-    | undefined;
+  city: string;
+
+  brokers: string | number;
 }
 const Table = ({ tableData }: { tableData: TableData[] }) => {
   return (
@@ -42,32 +25,9 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
             {tableData?.map(
               (item: {
                 id: React.Key | null | undefined;
-                city:
-                  | string
-                  | number
-                  | boolean
-                  | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | React.PromiseLikeOfReactNode
-                  | null
-                  | undefined;
-                brokers:
-                  | string
-                  | number
-                  | boolean
-                  | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | React.PromiseLikeOfReactNode
-                  | null
-                  | undefined;
+                city: string;
+
+                brokers: string | number;
               }) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 whitespace-nowrap bg-lightGray">
