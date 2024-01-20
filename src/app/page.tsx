@@ -27,22 +27,24 @@ type BrokerStats = {
 export default function Home() {
   interface Broker {
     _id: any;
-    id: String;
-    name: String;
-    identification: Number;
-    license: Number;
-    homeTown: String;
-    status: String;
-    createdAt: String;
-    updatedAt: String;
-    "מס רשיון": Number;
-    "שם המתווך": Number;
-    "עיר מגורים": String;
+    id: string;
+    name: string;
+    identification: number;
+    license: number;
+    homeTown: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    "מס רשיון": number;
+    "שם המתווך": number;
+    "עיר מגורים": string;
   }
   const [brokersData, setBrokersData] = useState<BrokerStats>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [tableData, setTableData] = useState<BrokerByCity>();
-  const [chartData, setChartData] = useState<any>(null);
+  const [fastestRisingState, setFastestRisingState] = useState<{
+    name: string;
+    count: number;
+  }>();
   const [currentMonthBrokers, setCurrentMonthBrokers] = useState<any>(null);
 
   const createBrokersRequest = async (brokers: any) => {
@@ -95,7 +97,45 @@ export default function Home() {
     }
   };
 
-  const getMonthlyBrokers = async () => {
+  const handleGetFastestRisingCity = (
+    monthlyBrokers: Broker[],
+    brokersByCity: BrokerByCity[]
+  ) => {
+    const groupedMonthlyBrokers = new Map<string, number>();
+    for (const broker of monthlyBrokers) {
+      const city = broker.homeTown;
+      const existing = groupedMonthlyBrokers.get(city);
+      if (existing) {
+        groupedMonthlyBrokers.set(city, existing + 1);
+      } else {
+        groupedMonthlyBrokers.set(city, 1);
+      }
+    }
+
+    let maxChangeCity = {
+      name: "",
+      count: 0,
+    };
+
+    for (const [city, count] of groupedMonthlyBrokers) {
+      const existingCity = brokersByCity.find((broker) => broker._id === city);
+
+      if (existingCity) {
+        const change = count - existingCity.count;
+        if (change > maxChangeCity.count) {
+          maxChangeCity = {
+            name: city,
+            count: change,
+          };
+        }
+      }
+    }
+    if (maxChangeCity.name !== "") {
+      setFastestRisingState(maxChangeCity);
+    }
+  };
+
+  const getMonthlyBrokers = async (brokersByCity = [] as BrokerByCity[]) => {
     try {
       const firstResponse = await axios.get(
         "https://data.gov.il/api/3/action/datastore_search?resource_id=a0f56034-88db-4132-8803-854bcdb01ca1&limit=1"
@@ -118,6 +158,7 @@ export default function Home() {
         })
       );
       setCurrentMonthBrokers(newRecords);
+      handleGetFastestRisingCity(newRecords, brokersByCity);
     } catch (error) {
       console.log(error);
     }
@@ -159,13 +200,23 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getMonthlyBrokers();
-  }, []);
+    getMonthlyBrokers(brokersData?.brokersByCity ?? []);
+  }, [brokersData?.brokersByCity]);
 
   useEffect(() => {
     setLoading(true);
     getBrokersFromDb().then(() => setLoading(false));
   }, []);
+
+  const handleGetRisingCity = () => {
+    const risingCity = brokersData?.brokersByCity?.sort(
+      (a: any, b: any) => b.count - a.count
+    )[0];
+    setFastestRisingState({
+      name: risingCity?._id ?? "N/A",
+      count: risingCity?.count ?? 0,
+    });
+  };
 
   return (
     <>
@@ -189,7 +240,7 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <Image src={TagIcon} alt="tag icon" />
                   <h1 className="text-[24px] font-bold text-grayish">
-                    Tel Aviv
+                    {fastestRisingState?.name ?? "N/A"}
                   </h1>
                 </div>
                 <div className="flex flex-col items-end">
@@ -198,17 +249,7 @@ export default function Home() {
                     {" "}
                     |{" "}
                     <span className="text-greenify text-[14px] font-bold ">
-                      {currentMonthBrokers?.length -
-                        (brokersData?.brokersCount ?? 0) >
-                      0
-                        ? currentMonthBrokers?.length -
-                          (brokersData?.brokersCount ?? 0)
-                        : currentMonthBrokers?.length -
-                            (brokersData?.brokersCount ?? 0) <
-                          0
-                        ? currentMonthBrokers?.length -
-                          (brokersData?.brokersCount ?? 0) * 1
-                        : 0}
+                      {fastestRisingState?.count ?? 0}{" "}
                     </span>{" "}
                     Brokers Added
                   </p>
