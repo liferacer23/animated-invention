@@ -18,9 +18,44 @@ export default async function handler(
   } else if (req.method === "GET") {
     try {
       await connectMongoDb();
-      const brokers = await Broker.find({});
+      // const brokers = await Broker.find({});
+      const brokersCount = await Broker.countDocuments({});
+      const brokersByCity = await Broker.aggregate([
+        {
+          $group: {
+            _id: "$homeTown",
+            count: { $sum: 1 },
+            latestEntry: { $first: "$createdAt" },
+          },
+        },
+        {
+          $sort: {
+            latestEntry: -1,
+          },
+        },
+      ]);
 
-      res.status(200).json({ brokers });
+      const latestEntry = await Broker.findOne().sort({ createdAt: -1 });
+      const groupBrokersByCreatedAt = await Broker.aggregate([
+        {
+          $group: {
+            _id: "$createdAt",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+      ]);
+
+      res.status(200).json({
+        brokersCount: brokersCount,
+        brokersByCity: brokersByCity,
+        latestEntry: latestEntry.createdAt,
+        groupBrokersByCreatedAt: groupBrokersByCreatedAt,
+      });
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

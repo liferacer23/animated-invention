@@ -7,6 +7,23 @@ import TableComponent from "./components/tableComponent";
 import axios from "axios";
 import moment from "moment";
 import Skeleton from "./skeleton";
+
+type BrokerByCity = {
+  _id: string;
+  count: number;
+  latestEntry: string;
+};
+
+type BrokerStats = {
+  brokersCount: number;
+  brokersByCity: BrokerByCity[];
+  latestEntry?: string;
+  groupBrokersByCreatedAt: {
+    _id: string;
+    count: number;
+  }[];
+};
+
 export default function Home() {
   interface Broker {
     _id: any;
@@ -22,9 +39,9 @@ export default function Home() {
     "שם המתווך": Number;
     "עיר מגורים": String;
   }
-  const [brokersData, setBrokersData] = useState<any>(null);
+  const [brokersData, setBrokersData] = useState<BrokerStats>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [tableData, setTableData] = useState<any>(null);
+  const [tableData, setTableData] = useState<BrokerByCity>();
   const [chartData, setChartData] = useState<any>(null);
   const [currentMonthBrokers, setCurrentMonthBrokers] = useState<any>(null);
 
@@ -123,26 +140,23 @@ export default function Home() {
       const response = await fetch(`/api/route`, {
         method: "GET",
       });
-      const data = await response.json();
+      const data = (await response.json()) as BrokerStats;
+      console.log(data);
 
       if (
-        data?.brokers?.length > 0 &&
-        data?.brokers[0]?.createdAt &&
-        moment(data?.brokers[data?.brokers?.length - 1]?.createdAt)
-          .startOf("month")
-          .format("YYYY-MM-DD") !==
+        data.brokersCount > 0 &&
+        data.latestEntry &&
+        moment(data.latestEntry).startOf("month").format("YYYY-MM-DD") !==
           moment().startOf("month").format("YYYY-MM-DD")
       ) {
         await getBrokers();
       } else {
-        return setBrokersData(data?.brokers);
+        return setBrokersData(data);
       }
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
-  console.log(brokersData);
 
   useEffect(() => {
     getMonthlyBrokers();
@@ -152,37 +166,6 @@ export default function Home() {
     setLoading(true);
     getBrokersFromDb().then(() => setLoading(false));
   }, []);
-
-  useEffect(() => {
-    if (brokersData?.length > 0) {
-      const cities = brokersData?.map((broker: Broker) => broker.homeTown);
-
-      const uniqueCities = [...new Set(cities)];
-      const brokersPerCity = uniqueCities.map((city) => {
-        const brokers = brokersData.filter(
-          (broker: Broker) => broker.homeTown === city
-        );
-        return {
-          city,
-          brokers: brokers.length,
-        };
-      });
-      setTableData(brokersPerCity);
-      const brokersPerMonth = brokersData.map((broker: Broker) => {
-        return {
-          createdAt: broker.createdAt,
-          activeBrokers: brokersData.filter(
-            (b: Broker) => b.createdAt === broker.createdAt
-          ).length,
-        };
-      });
-      const uniqueBrokersPerMonth = filterDuplicateObjects(
-        brokersPerMonth,
-        "createdAt"
-      );
-      setChartData(uniqueBrokersPerMonth);
-    }
-  }, [brokersData]);
 
   return (
     <>
@@ -215,10 +198,16 @@ export default function Home() {
                     {" "}
                     |{" "}
                     <span className="text-greenify text-[14px] font-bold ">
-                      {currentMonthBrokers?.length - brokersData?.length > 0
-                        ? currentMonthBrokers?.length - brokersData?.length
-                        : currentMonthBrokers?.length - brokersData?.length < 0
-                        ? currentMonthBrokers?.length - brokersData?.length * 1
+                      {currentMonthBrokers?.length -
+                        (brokersData?.brokersCount ?? 0) >
+                      0
+                        ? currentMonthBrokers?.length -
+                          (brokersData?.brokersCount ?? 0)
+                        : currentMonthBrokers?.length -
+                            (brokersData?.brokersCount ?? 0) <
+                          0
+                        ? currentMonthBrokers?.length -
+                          (brokersData?.brokersCount ?? 0) * 1
                         : 0}
                     </span>{" "}
                     Brokers Added
@@ -240,12 +229,13 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <Image src={TagIcon} alt="tag icon" />
                   <h1 className="text-[24px] font-bold text-grayish">
-                    {brokersData?.length === currentMonthBrokers?.length
-                      ? brokersData?.length.toLocaleString()
+                    {(brokersData?.brokersCount ?? 0) ===
+                    currentMonthBrokers?.length
+                      ? (brokersData?.brokersCount ?? 0).toLocaleString()
                       : Math.max(
                           currentMonthBrokers?.length -
-                            brokersData?.length +
-                            brokersData?.length,
+                            (brokersData?.brokersCount ?? 0) +
+                            (brokersData?.brokersCount ?? 0),
                           0
                         ).toLocaleString()}
                   </h1>
@@ -256,12 +246,13 @@ export default function Home() {
                     {" "}
                     |{" "}
                     <span className="text-greenify text-[14px] font-bold">
-                      {brokersData?.length === currentMonthBrokers?.length
+                      {(brokersData?.brokersCount ?? 0) ===
+                      currentMonthBrokers?.length
                         ? "0%"
                         : `${(
                             ((currentMonthBrokers?.length -
-                              brokersData?.length) /
-                              brokersData?.length) *
+                              (brokersData?.brokersCount ?? 0)) /
+                              (brokersData?.brokersCount ?? 0)) *
                             100
                           ).toLocaleString(undefined, {
                             maximumFractionDigits: 2,
@@ -274,10 +265,31 @@ export default function Home() {
             </div>
           </>
           <div className="w-full flex justify-end gap-10 my-5 ">
-            <LineChart chartData={chartData} />
+            <LineChart
+              chartData={
+                brokersData?.groupBrokersByCreatedAt
+                  ?.map((item: any) => ({
+                    createdAt: item._id,
+                    activeBrokers: item.count,
+                  }))
+                  .sort(
+                    (a: any, b: any) => b.activeBrokers - a.activeBrokers
+                  ) ?? []
+              }
+            />
           </div>
           <div className="w-full flex justify-end gap-10 my-5 ">
-            <TableComponent tableData={tableData} />
+            <TableComponent
+              tableData={
+                brokersData?.brokersByCity
+                  ?.map((item: any) => ({
+                    id: item._id,
+                    city: item._id,
+                    brokers: item.count,
+                  }))
+                  .sort((a: any, b: any) => b.brokers - a.brokers) ?? []
+              }
+            />
           </div>
         </main>
       )}
