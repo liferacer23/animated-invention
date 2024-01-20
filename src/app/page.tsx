@@ -218,11 +218,11 @@ export default function Home() {
                 <div className="flex justify-between items-start ">
                   <Image src={TagIcon} alt="tag icon" />
                   <h1 className="text-[24px] font-bold text-grayish">
-                    Tel Aviv
+                    {brokersData?.brokersByCity[0]._id ?? "N/A"}
                   </h1>
                 </div>
                 <div className="flex flex-col items-end">
-                  <p>City&apos;s Monthly Brokers</p>
+                  <p>City with the most brokers</p>
                 </div>
               </div>
               <div className="flex flex-col items-between w-[231px] h-[121px] shadow-smx bg-white gap-2">
@@ -281,13 +281,11 @@ export default function Home() {
           <div className="w-full flex justify-end gap-10 my-5 ">
             <TableComponent
               tableData={
-                brokersData?.brokersByCity
-                  ?.map((item: any) => ({
-                    id: item._id,
-                    city: item._id,
-                    brokers: item.count,
-                  }))
-                  .sort((a: any, b: any) => b.brokers - a.brokers) ?? []
+                brokersData?.brokersByCity?.map((item: any) => ({
+                  id: item._id,
+                  city: item._id,
+                  brokers: item.count,
+                })) ?? []
               }
             />
           </div>

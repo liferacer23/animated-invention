@@ -30,7 +30,7 @@ export default async function handler(
         },
         {
           $sort: {
-            latestEntry: -1,
+            count: -1,
           },
         },
       ]);
