@@ -24,7 +24,7 @@ export default function App({ chartData }: { chartData: ChartData[] }) {
       data={chartData}
       margin={{
         top: 5,
-        right: 30,
+
         left: 30,
         bottom: 5,
       }}

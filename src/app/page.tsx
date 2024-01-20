@@ -304,7 +304,13 @@ export default function Home() {
               </div>
             </div>
           </>
-          <div className="w-full flex justify-end gap-10 my-5 ">
+          <div className="w-full flex flex-col items-end gap-10 my-5 ">
+            <h1
+              className="
+                text-[22px] font-bold text-grayish font-jakarta mr-10"
+            >
+              Monthly Trends in Active Brokers
+            </h1>
             <LineChart
               chartData={
                 brokersData?.groupBrokersByCreatedAt
