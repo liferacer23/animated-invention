@@ -19,6 +19,7 @@ export default async function handler(
     try {
       await connectMongoDb();
       const brokers = await Broker.find({});
+
       res.status(200).json({ brokers });
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });

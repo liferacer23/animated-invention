@@ -135,7 +135,7 @@ export default function Home() {
       ) {
         await getBrokers();
       } else {
-        return setBrokersData(filterDuplicateObjects(data?.brokers, "license"));
+        return setBrokersData(data?.brokers);
       }
     } catch (error) {
       console.error("Error:", error);
