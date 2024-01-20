@@ -182,7 +182,6 @@ export default function Home() {
         method: "GET",
       });
       const data = (await response.json()) as BrokerStats;
-      console.log(data);
 
       if (
         data.brokersCount > 0 &&
