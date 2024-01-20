@@ -31,7 +31,7 @@ export default function Home() {
   const createBrokersRequest = async (brokers: any) => {
     try {
       const response = await fetch(
-        `https://animated-invention-bqcn.vercel.app/api/route`,
+        `https://animated-invention-bqcn.vercel.app/pages/api/route`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export default function Home() {
   const getBrokersFromDb = async () => {
     try {
       const response = await fetch(
-        `https://animated-invention-bqcn.vercel.app/api/route`,
+        `https://animated-invention-bqcn.vercel.app/pages/api/route`,
         {
           method: "GET",
         }
