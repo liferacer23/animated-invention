@@ -307,7 +307,7 @@ export default function Home() {
           <div className="w-full flex flex-col items-end gap-10 my-5 ">
             <h1
               className="
-                text-[22px] font-bold text-grayish font-jakarta mr-10"
+                text-[22px] font-bold text-grayish font-[Plus Jakarta Sans] mr-10"
             >
               Monthly Trends in Active Brokers
             </h1>

@@ -25,7 +25,7 @@ interface TableData {
 }
 const Table = ({ tableData }: { tableData: TableData[] }) => {
   return (
-    <div className="border-grayish border-2 h-fit mb-5 rounded-xl">
+    <div className="border-grayish border-2 h-fit mb-5 rounded-tr-xl rounded-br-xl">
       <div className="w-[32rem] h-[25rem] overflow-auto rounded-xl">
         <table className="bg-white border-solid  rounded-xl ">
           <thead className="sticky top-0 bg-white">
