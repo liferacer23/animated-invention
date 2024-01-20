@@ -18,7 +18,7 @@ export default async function handler(
   } else if (req.method === "GET") {
     try {
       await connectMongoDb();
-      // const brokers = await Broker.find({});
+
       const brokersCount = await Broker.countDocuments({});
       const brokersByCity = await Broker.aggregate([
         {
